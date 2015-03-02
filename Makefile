@@ -11,6 +11,7 @@ help:
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "release - package and upload a release"
+	@echo "release-test - package and upload a test release"
 	@echo "dist - package"
 	@echo "install - install the package to the active Python's site-packages"
 
@@ -56,6 +57,10 @@ docs:
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
+
+release-test: clean
+	python setup.py sdist upload -r https://testpypi.python.org/pypi
+	python setup.py bdist_wheel upload -r https://testpypi.python.org/pypi
 
 release: clean
 	python setup.py sdist upload

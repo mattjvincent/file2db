@@ -112,22 +112,22 @@ def count_lines(filename):
     return lines
 
 
-def parse_file(filename, output_file, delim='\t', null_value='\N'):
+def parse_file(input_file, delimiter, output_file=None, null_value=None, info_only=True):
     """
     Parse a file and gather statistics about each column.
     """
     col_info = []
-    num_lines = count_lines(filename)
+    num_lines = count_lines(input_file)
     if num_lines == 0:
-        logging.error("'{0}' contains no lines!!!".format(filename))
+        logging.error("'{0}' contains no lines!!!".format(input_file))
         exit()
 
     line = 0
 
     try:
-        reader = csv.reader(open(filename, "rb"), delimiter=delim, quoting=csv.QUOTE_MINIMAL)
-        if output_file:
-            writer = csv.writer(open(output_file, "wb"), delimiter=delim, quoting=csv.QUOTE_MINIMAL)
+        reader = csv.reader(open(input_file, "rb"), delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
+        if not info_only:
+            writer = csv.writer(open(output_file, "wb"), delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
         first_row = reader.next()
         i = 0
         line += 1
@@ -197,9 +197,10 @@ def parse_file(filename, output_file, delim='\t', null_value='\N'):
                 i += 1
             line += 1
 
-            if output_file:
+            if not info_only:
                 writer.writerow(new_row)
     except Exception, inst:
+        print str(inst)
         print "Line number: " + str(line)
         return None
 
