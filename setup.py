@@ -26,7 +26,7 @@ all_scripts=["bin/file2db"]
 
 setup(
     name='file2db',
-    version='0.1.0',
+    version='0.4.0',
     description="Simple file to database manipulation",
     long_description=readme + '\n\n' + history,
     author="Matthew Vincent",
@@ -39,14 +39,14 @@ setup(
                  'file2db'},
     include_package_data=True,
     install_requires=requirements,
-    license="BSD",
+    license="GPLv3",
     zip_safe=False,
     keywords='file2db',
     scripts=all_scripts,
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',

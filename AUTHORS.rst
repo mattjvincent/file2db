@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Matthew Vincent <mattjvincentgmail.com>
+* Matthew Vincent <mattjvincent@gmail.com>
 
 Contributors
 ------------
