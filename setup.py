@@ -26,7 +26,7 @@ all_scripts=["bin/file2db"]
 
 setup(
     name='file2db',
-    version='0.4.0',
+    version='0.5.0',
     description="Simple file to database manipulation",
     long_description=readme + '\n\n' + history,
     author="Matthew Vincent",
