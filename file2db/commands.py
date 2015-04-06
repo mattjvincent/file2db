@@ -62,9 +62,27 @@ def pprint_table(out, table):
         print >> out
 
 
-def print_table(table):
+def tprint_table(out, table):
     for row in table:
-        print '\t'.join(row)
+        print >> out, '\t'.join(row)
+
+def jprint_table(out, table):
+    jrows = []
+
+    for row in table:
+        jrow = {'index': row[0],
+                'column': row[1],
+                 'max_value': row[2],
+                 'min_value': row[3],
+                 'max_length': row[4],
+                 'min_length': row[5],
+                 'type': row[6],
+                 'num_vals': row[7],
+                 'num_empty': row[8]}
+
+        jrows.append(jrow)
+
+    print >> out, str(jrows)
 
 
 def command_info(raw_args, prog=None):
@@ -80,6 +98,8 @@ def command_info(raw_args, prog=None):
     group_delim = parser.add_mutually_exclusive_group(required=True)
     group_delim.add_argument('-C', '--comma', action='store_true', help='comma delimited file')
     group_delim.add_argument('-T', '--tab', action='store_true', help='tab delimited file')
+
+    parser.add_argument("-f", dest="format", choices=['pretty', 'tab', 'json'], default='pretty', action='store')
 
     parser.add_argument('input_file', metavar='input_file',
                           help="parse data in FILE")
@@ -119,7 +139,14 @@ def command_info(raw_args, prog=None):
                 simple_type = simple_type.replace("'>", "")
                 table.append([str(c.index), str(c.name), str(c.max_value), str(c.min_value), str(c.max_length), str(c.min_length), simple_type.upper(), str(c.not_empty), str(c.empty)])
 
-            pprint_table(sys.stdout, table)
+            if args.format == 'tab':
+                tprint_table(sys.stdout, table)
+            elif args.format == 'json':
+                jprint_table(sys.stdout, table)
+            else:
+                pprint_table(sys.stdout, table)
+
+
         else:
             print 'Error parsing file!'
     except Exception, e:
@@ -154,7 +181,6 @@ def command_sql(raw_args, prog=None):
 
     parser.add_argument('-n', '--tablename', required=True,
                         metavar="table_name", help="generate SQL DML with supplied name as the table")
-
 
     parser.add_argument('input_file', metavar='input_file',
                           help="parse data in FILE")
