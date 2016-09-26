@@ -207,7 +207,7 @@ def command_sql(raw_args, prog=None):
     table_name = args.tablename
     delimiter = '\t' if args.tab else ','
     dialect = 'MYSQL' if args.MySQL else 'SQLITE'
-    null_value = '\N' if args.MySQL else ''
+    null_value = b'\N' if args.MySQL else ''
 
     if args.output:
         output_dir = args.output
