@@ -9,8 +9,7 @@ import os
 import sys
 import types
 
-BAD_LEADING_CHARS = map(str, xrange(0, 10))
-BAD_LEADING_CHARS.append('_')
+BAD_LEADING_CHARS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_']
 EMPTY_COLUMN_VALS = ['na', 'n/a', '(none)', '(null)', 'null']
 
 
