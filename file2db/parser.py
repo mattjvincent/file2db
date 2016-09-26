@@ -1,3 +1,6 @@
+from __future__ import print_function
+from past.builtins import basestring, xrange
+
 import argparse
 import csv
 import locale
@@ -199,9 +202,9 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
 
             if not info_only:
                 writer.writerow(new_row)
-    except Exception, inst:
-        print str(inst)
-        print "Line number: " + str(line)
+    except Exception as inst:
+        print(str(inst))
+        print("Line number: " + str(line))
         return None
 
     return col_info

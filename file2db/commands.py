@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import locale
 import logging
@@ -14,13 +16,13 @@ def _show_error():
     """
     et, ev, tb = sys.exc_info()
 
-    print "Error Type: %s" % et
-    print "Error Value: %s" % ev
+    print("Error Type: %s" % et)
+    print("Error Value: %s" % ev)
     while tb:
         co = tb.tb_frame.f_code
         filename = str(co.co_filename)
         line_no = str(traceback.tb_lineno(tb))
-        print '    %s:%s' % (filename, line_no)
+        print('    %s:%s' % (filename, line_no))
         tb = tb.tb_next
 
 
@@ -122,7 +124,7 @@ def command_info(raw_args, prog=None):
     delimiter = '\t' if args.tab else ','
 
     if not os.path.isfile(input_file):
-        print "\nError: " + input_file + " is not a valid file."
+        print("\nError: " + input_file + " is not a valid file.")
         exit(1)
 
     locale.setlocale(locale.LC_NUMERIC, "")
@@ -131,7 +133,7 @@ def command_info(raw_args, prog=None):
         logging.debug("Parsing '{0}'...".format(input_file))
         columns = parse_file(input_file, delimiter)
         if columns:
-            print 'File Summary:'
+            print('File Summary:')
             table = [["INDEX", "COLUMN", "MAXVALUE", "MINVALUE", "MAXLEN", "MINLEN", "TYPE", "#VALS", "#EMPTY"]]
 
             for c in columns:
@@ -148,9 +150,9 @@ def command_info(raw_args, prog=None):
 
 
         else:
-            print 'Error parsing file!'
-    except Exception, e:
-        print str(e)
+            print('Error parsing file!')
+    except Exception as e:
+        print(str(e))
         _show_error()
         logging.error('ouch')
 
@@ -211,7 +213,7 @@ def command_sql(raw_args, prog=None):
         output_dir = args.output
 
     if not os.path.isfile(input_file):
-        print "\nError: " + input_file + " is not a valid file."
+        print("\nError: " + input_file + " is not a valid file.")
         exit(1)
 
     locale.setlocale(locale.LC_NUMERIC, "")
@@ -225,7 +227,7 @@ def command_sql(raw_args, prog=None):
         columns = parse_file(input_file, delimiter, output_file, null_value, False)
 
         if columns != None:
-            print 'File Summary:'
+            print('File Summary:')
             table = [["INDEX", "COLUMN", "MAXVALUE", "MINVALUE", "MAXLEN", "MINLEN", "TYPE", "#VALS", "#EMPTY"]]
 
             for c in columns:
@@ -245,10 +247,10 @@ def command_sql(raw_args, prog=None):
                 sql_file_fd.write(sql_import)
                 sql_file_fd.close()
             except:
-                print 'Unable to generate SQL files!'
+                print('Unable to generate SQL files!')
         else:
-            print 'Error parsing file!'
-    except Exception, e:
-        print str(e)
+            print('Error parsing file!')
+    except Exception as e:
+        print(str(e))
         _show_error()
         logging.error('ouch')

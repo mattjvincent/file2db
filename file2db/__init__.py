@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from parser import parse_file
-from db import generate_ddl, generate_import
-from commands import command_info, command_sql
+from .parser import parse_file
+from .db import generate_ddl, generate_import
+from .commands import command_info, command_sql
 
 __version__ = '0.1.0'
 __author__ = 'Matthew Vincent, The Jackson Laboratory'
