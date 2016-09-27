@@ -70,6 +70,9 @@ def parse_type(value):
     """
     Return converted value or raise File2DBParseError
     """
+    #print('value=',value)
+    #print (type(value))
+
     try:
         return int(value)
     except ValueError:
@@ -81,8 +84,11 @@ def parse_type(value):
         pass
 
     if is_py2:
-        if isinstance(value, str):
+        if isinstance(value, unicode):
             return value.decode('ascii', 'ignore')
+
+        if isinstance(value, str):
+            return value
 
     else:
         if isinstance(value, bytes):
@@ -111,12 +117,30 @@ def fix_column_name(column_name):
     return column_name
 
 
+def _fixstr(s):
+    #print('s=',s)
+    #print (type(s))
+
+    if is_py2:
+        if isinstance(s, str):
+            return str(s.decode('ascii', 'ignore'))
+    else:
+        if isinstance(s, bytes):
+            return n(s)
+
+        if isinstance(s, str):
+            return s
+
+    return str(s)
+
+
 def qdf(c):
     """
     qdf = quick data fix
     Strip the trailing and leading spaces and/or replace with None
     """
-    s = str(c)
+
+    s = _fixstr(c)
     s = s.strip()
 
     if len(s) > 1 and (s[0] == '"' or s[0] == '\'') and (s[-1] == '"' or s[-1] == '\''):
