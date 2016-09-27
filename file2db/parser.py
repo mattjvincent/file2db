@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
 from __future__ import unicode_literals
 from future.utils import bytes_to_native_str as n
@@ -8,6 +10,7 @@ import argparse
 import csv
 import locale
 import logging
+import mmap
 import os
 import sys
 import traceback
@@ -79,7 +82,7 @@ def parse_type(value):
 
     if is_py2:
         if isinstance(value, str):
-            return value.encode('ascii', 'ignore')
+            return value.decode('ascii', 'ignore')
 
     else:
         if isinstance(value, bytes):
@@ -137,18 +140,13 @@ def qdf_row(row):
 
 
 def count_lines(filename):
-    f = open(filename)
+    f = open(filename, "r+")
+    buf = mmap.mmap(f.fileno(), 0)
     lines = 0
-    buf_size = 1024 * 1024
-    read_f = f.read # loop optimization
-
-    buf = read_f(buf_size)
-    while buf:
-        lines += buf.count('\n')
-        buf = read_f(buf_size)
-
+    readline = buf.readline
+    while readline():
+        lines += 1
     return lines
-
 
 def parse_file(input_file, delimiter, output_file=None, null_value=None, info_only=True):
     """
