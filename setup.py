@@ -14,6 +14,9 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
+    'future>=0.15.2',
+    'tabulate>=0.7.5',
+
     # TODO: put package requirements here
 ]
 
@@ -26,7 +29,7 @@ all_scripts=["bin/file2db"]
 
 setup(
     name='file2db',
-    version='0.9.0',
+    version='0.9.1',
     description="Simple file to database manipulation",
     long_description=readme + '\n\n' + history,
     author="Matthew Vincent",

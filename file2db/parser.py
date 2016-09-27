@@ -207,6 +207,9 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
                     v = parse_type(data)
                     t = type(v)
 
+                    #print('\ncurrent column: {}'.format(c))
+                    #print('current value: {}, type: {}'.format(v, t))
+
                     dl = len(str(v))
 
                     if c.type is None:
@@ -216,6 +219,9 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
                         if t == str:
                             # new data is str
                             c.type = t
+                            # TODO: this isn't the best way to handle this
+                            c.max_value = str(c.max_value)
+                            c.min_value = str(c.min_value)
                     elif c.type == str:
                         v = str(v)
                     else:
