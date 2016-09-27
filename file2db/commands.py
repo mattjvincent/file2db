@@ -8,7 +8,7 @@ import sys
 import traceback
 from .parser import parse_file
 from .db import generate_ddl, generate_import
-
+from .compat import is_py2
 
 def _show_error():
     """
@@ -41,50 +41,6 @@ def format_num(num):
 def get_max_width(table, index):
     """Get the maximum width of the given column index"""
     return max([len(format_num(row[index])) for row in table])
-
-
-def pprint_table(out, table):
-    """Prints out a table of data, padded for alignment
-    @param out: Output stream (file-like object)
-    @param table: The table to print. A list of lists.
-    Each row must have the same number of columns. """
-
-    col_paddings = []
-
-    for i in range(len(table[0])):
-        col_paddings.append(get_max_width(table, i))
-
-    for row in table:
-        # left col
-        print >> out, row[0].ljust(col_paddings[0] + 1),
-        # rest of the cols
-        for i in range(1, len(row)):
-            col = format_num(row[i]).ljust(col_paddings[i] + 2)
-            print >> out, col,
-        print >> out
-
-
-def tprint_table(out, table):
-    for row in table:
-        print >> out, '\t'.join(row)
-
-def jprint_table(out, table):
-    jrows = []
-
-    for row in table:
-        jrow = {'index': row[0],
-                'column': row[1],
-                 'max_value': row[2],
-                 'min_value': row[3],
-                 'max_length': row[4],
-                 'min_length': row[5],
-                 'type': row[6],
-                 'num_vals': row[7],
-                 'num_empty': row[8]}
-
-        jrows.append(jrow)
-
-    print >> out, str(jrows)
 
 
 def command_info(raw_args, prog=None):
@@ -129,6 +85,11 @@ def command_info(raw_args, prog=None):
 
     locale.setlocale(locale.LC_NUMERIC, "")
 
+    if is_py2:
+        rep = "<type '"
+    else:
+        rep = "<class '"
+
     try:
         logging.debug("Parsing '{0}'...".format(input_file))
         columns = parse_file(input_file, delimiter)
@@ -137,16 +98,12 @@ def command_info(raw_args, prog=None):
             table = [["INDEX", "COLUMN", "MAXVALUE", "MINVALUE", "MAXLEN", "MINLEN", "TYPE", "#VALS", "#EMPTY"]]
 
             for c in columns:
-                simple_type = str(c.type).replace("<type '", "")
+                simple_type = str(c.type).replace(rep, "")
                 simple_type = simple_type.replace("'>", "")
                 table.append([str(c.index), str(c.name), str(c.max_value), str(c.min_value), str(c.max_length), str(c.min_length), simple_type.upper(), str(c.not_empty), str(c.empty)])
 
-            if args.format == 'tab':
-                tprint_table(sys.stdout, table)
-            elif args.format == 'json':
-                jprint_table(sys.stdout, table)
-            else:
-                pprint_table(sys.stdout, table)
+            from tabulate import tabulate
+            print(tabulate(table))
 
 
         else:
@@ -226,16 +183,22 @@ def command_sql(raw_args, prog=None):
 
         columns = parse_file(input_file, delimiter, output_file, null_value, False)
 
+        if is_py2:
+            rep = "<type '"
+        else:
+            rep = "<class '"
+
         if columns != None:
             print('File Summary:')
             table = [["INDEX", "COLUMN", "MAXVALUE", "MINVALUE", "MAXLEN", "MINLEN", "TYPE", "#VALS", "#EMPTY"]]
 
             for c in columns:
-                simple_type = str(c.type).replace("<type '", "")
+                simple_type = str(c.type).replace(rep, "")
                 simple_type = simple_type.replace("'>", "")
                 table.append([str(c.index), str(c.name), str(c.max_value), str(c.min_value), str(c.max_length), str(c.min_length), simple_type.upper(), str(c.not_empty), str(c.empty)])
 
-            pprint_table(sys.stdout, table)
+            from tabulate import tabulate
+            print(tabulate(table))
 
             sql_ddl = generate_ddl(dialect, table_name, columns)
             sql_import = generate_import(dialect, table_name, columns, output_file, delimiter)

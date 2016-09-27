@@ -1,5 +1,8 @@
 from __future__ import print_function
-from past.builtins import basestring, xrange
+from __future__ import unicode_literals
+from future.utils import bytes_to_native_str as n
+from past.builtins import long
+
 
 import argparse
 import csv
@@ -7,11 +10,33 @@ import locale
 import logging
 import os
 import sys
+import traceback
 import types
+
+from .compat import is_py2#, str, bytes, basestring
+
+
+
 
 BAD_LEADING_CHARS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_']
 EMPTY_COLUMN_VALS = ['na', 'n/a', '(none)', '(null)', 'null']
 
+def _show_error():
+    """
+    show system errors
+    """
+    et, ev, tb = sys.exc_info()
+
+    print("Error Type: %s" % et)
+    print("Error Value: %s" % ev)
+    while tb :
+        co = tb.tb_frame.f_code
+        filename = str(co.co_filename)
+        #line_no = str(traceback.tb_lineno(tb))
+        line_no = 1
+        print('    %s:%s' % (filename, line_no))
+        traceback.print_tb(tb)
+        tb = tb.tb_next
 
 class File2DBParseError(Exception):
     pass
@@ -34,6 +59,9 @@ class Column(object):
         self.empty = 0
         self.not_empty = 0
 
+    def __str__(self):
+        return 'Name: {} Type: {}'.format(self.name, self.type)
+
 
 def parse_type(value):
     """
@@ -49,8 +77,16 @@ def parse_type(value):
     except ValueError:
         pass
 
-    if isinstance(value, basestring):
-        return value.encode('ascii', 'ignore')
+    if is_py2:
+        if isinstance(value, str):
+            return value.encode('ascii', 'ignore')
+
+    else:
+        if isinstance(value, bytes):
+            return n(value)
+
+        if isinstance(value, str):
+            return value
 
     raise File2DBParseError('Unknown type')
 
@@ -127,10 +163,11 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
     line = 0
 
     try:
-        reader = csv.reader(open(input_file, "rb"), delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
+        reader = csv.reader(open(input_file), delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
+
         if not info_only:
-            writer = csv.writer(open(output_file, "wb"), delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
-        first_row = reader.next()
+            writer = csv.writer(open(output_file, "w"), delimiter=delimiter, quoting=csv.QUOTE_MINIMAL)
+        first_row = next(reader)
         i = 0
         line += 1
 
@@ -172,6 +209,18 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
 
                     dl = len(str(v))
 
+                    if c.type is None:
+                        c.type = t
+                    elif c.type in (float, long, int):
+                        # column is currently numeric
+                        if t == str:
+                            # new data is str
+                            c.type = t
+                    elif c.type == str:
+                        v = str(v)
+                    else:
+                        c.type = t
+
                     if c.max_value:
                         c.max_length = dl if dl > c.max_length else c.max_length
                         c.max_value = v if v > c.max_value else c.max_value
@@ -186,14 +235,6 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
                         c.min_value = v
                         c.min_length = dl
 
-                    if c.type == types.FloatType:
-                        if t == str:
-                            c.type = t
-                    elif c.type == types.StringType:
-                        pass
-                    else:
-                        c.type = t
-
                 col_info[i] = c
 
                 i += 1
@@ -202,6 +243,7 @@ def parse_file(input_file, delimiter, output_file=None, null_value=None, info_on
             if not info_only:
                 writer.writerow(new_row)
     except Exception as inst:
+        _show_error()
         print(str(inst))
         print("Line number: " + str(line))
         return None

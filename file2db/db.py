@@ -26,9 +26,9 @@ def generate_mysql_ddl(table_name, columns):
     i = 0
     for c in columns:
         column_type = 'VARCHAR'
-        if c.type == types.FloatType:
+        if c.type == float:
             column_type = 'DOUBLE'
-        elif c.type == types.StringType:
+        elif c.type == str:
             if c.max_length == 1:
                 column_type = 'CHAR(' + str(c.max_length) + ')'
             elif (c.max_length - c.min_length) <= 1:
@@ -50,9 +50,9 @@ def generate_mysql_ddl(table_name, columns):
     sql.append('    _{0}_id INT(10) unsigned NOT NULL AUTO_INCREMENT,'.format(table_name))
     for c in columns:
         column_type = 'VARCHAR'
-        if c.type == types.FloatType:
+        if c.type == float:
             column_type = 'DOUBLE'
-        elif c.type == types.StringType:
+        elif c.type == str:
             if c.max_length == 1:
                 column_type = 'CHAR(' + str(c.max_length) + ')'
             elif (c.max_length - c.min_length) <= 1:
@@ -90,9 +90,9 @@ def generate_sqlite_ddl(table_name, columns):
     i = 0
     for c in columns:
         column_type = 'TEXT'
-        if c.type == types.FloatType:
+        if c.type == float:
             column_type = 'REAL'
-        elif c.type == types.StringType:
+        elif c.type == str:
             column_type = 'TEXT'
         else:
             column_type = 'INTEGER'
@@ -110,9 +110,9 @@ def generate_sqlite_ddl(table_name, columns):
     i = 0
     for c in columns:
         column_type = 'TEXT'
-        if c.type == types.FloatType:
+        if c.type == float:
             column_type = 'REAL'
-        elif c.type == types.StringType:
+        elif c.type == str:
             column_type = 'TEXT'
         else:
             column_type = 'INTEGER'

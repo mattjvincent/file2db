@@ -4,7 +4,7 @@ from .parser import parse_file
 from .db import generate_ddl, generate_import
 from .commands import command_info, command_sql
 
-__version__ = '0.8.0'
+__version__ = '0.9.0'
 __author__ = 'Matthew Vincent, The Jackson Laboratory'
 __email__ = 'matt.vincent@jax.org'
 
